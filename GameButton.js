@@ -16,13 +16,13 @@ class GButton {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, BUTTON_DIMENSION, BUTTON_DIMENSION);
 
-        if (this.game.click && this.game.mouse) {
-            this.checkClicked(this.game.click.x, this.game.click.y);
-        }
+        
     }
 
     update() {
-
+        if (this.game.click /*&& this.game.mouse*/) {
+            this.checkClicked(this.game.click.x, this.game.click.y);
+        }
     }
 
     /*
@@ -33,13 +33,13 @@ class GButton {
         console.log(Y);
         console.log(this.color);
 
-        if(X < this.x + 150 && this.x < X) {
+        if(X < this.x + BUTTON_DIMENSION && this.x < X) {
             if (Y < this.y + 150 && this.y < Y) {
                 this.color = "White";
             }
         }
 
-        this.game.click = null;
+        
     }
 
 }
