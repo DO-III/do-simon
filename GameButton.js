@@ -31,6 +31,7 @@ class GButton {
     checkClicked(X, Y) {
         console.log(X);
         console.log(Y);
+        console.log(this.color);
 
         if(X < this.x + 150 && this.x < X) {
             if (Y < this.y + 150 && this.y < Y) {
