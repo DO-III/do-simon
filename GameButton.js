@@ -1,7 +1,11 @@
 const BUTTON_DIMENSION = 150;
 
 
+/*
+Creates a single button in Gremlin Says.
 
+Buttons flash when clicked or prompted.
+ */
 class GButton {
 
     constructor(game, x, y, color) {
@@ -9,37 +13,47 @@ class GButton {
         this.x = x;
         this.y = y;
         this.color = color;
-        
+        this.activeColor = color;
+
+        this.activated = false;
+        this.timeForFlash = 0;
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = this.activeColor;
         ctx.fillRect(this.x, this.y, BUTTON_DIMENSION, BUTTON_DIMENSION);
 
         
     }
 
     update() {
-        if (this.game.click /*&& this.game.mouse*/) {
+        if (this.activated) {
+            this.timeForFlash -= this.game.clockTick;
+            if (this.timeForFlash < 0) {
+                this.activeColor = this.color;
+                this.activated = false;
+            }
+        } else if (this.game.click /*&& this.game.mouse*/) {
             this.checkClicked(this.game.click.x, this.game.click.y);
         }
+    }
+
+    flash() {
+        this.activated = true;
+        this.activeColor = "White";
+        this.timeForFlash = 0.1;
     }
 
     /*
     Make this button flash its assigned color.
     */ 
     checkClicked(X, Y) {
-        console.log(X);
-        console.log(Y);
-        console.log(this.color);
-
         if(X < this.x + BUTTON_DIMENSION && this.x < X) {
             if (Y < this.y + 150 && this.y < Y) {
-                this.color = "White";
+                if (this.activated == false) {
+                    this.flash();
+                }
             }
-        }
-
-        
+        }        
     }
-
 }
