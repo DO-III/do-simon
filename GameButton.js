@@ -52,8 +52,45 @@ class GButton {
             if (Y < this.y + 150 && this.y < Y) {
                 if (this.activated == false) {
                     this.flash();
+                    GremlinManager.PlayerSequence.push[this];
                 }
             }
         }        
     }
+}
+
+/*
+Manages the Gremlin Says game.
+
+Tracks buttons pressed, and makes them display patterns.
+*/
+class GremlinManager {
+
+    static GameButtons = [];
+    static ObjectiveSequence = [];
+    static PlayerSequence = [];
+
+    constructor(game) {
+        this.game = game;
+    }
+
+    initialize(listOfButtons) {
+        listOfButtons.forEach(element => {
+            GremlinManager.GameButtons.push(element);
+        });
+
+        GremlinManager.GameButtons.forEach(button => {
+            this.game.addEntity(button);
+        });
+    }
+
+    draw(ctx) {
+
+    }
+
+    update() {
+        
+    }
+
+
 }
