@@ -52,7 +52,8 @@ class GButton {
             if (Y < this.y + 150 && this.y < Y) {
                 if (this.activated == false) {
                     this.flash();
-                    GremlinManager.PlayerSequence.push[this];
+                    GremlinManager.PlayerSequence.push(this);
+                    GremlinManager.checkIfGood();
                 }
             }
         }        
@@ -69,9 +70,16 @@ class GremlinManager {
     static GameButtons = [];
     static ObjectiveSequence = [];
     static PlayerSequence = [];
+    static lightingButtons = false;
 
     constructor(game) {
         this.game = game;
+        
+
+        this.gameIsOver = false;
+        this.score = 0;
+        this.checkIndex = 0;
+
     }
 
     initialize(listOfButtons) {
@@ -82,14 +90,37 @@ class GremlinManager {
         GremlinManager.GameButtons.forEach(button => {
             this.game.addEntity(button);
         });
+
+        this.startGame();
     }
 
+    startGame() {
+        //Test value, make generation later.
+        GremlinManager.ObjectiveSequence.push(GremlinManager.GameButtons[0]);
+        GremlinManager.ObjectiveSequence.push(GremlinManager.GameButtons[1]);
+        GremlinManager.ObjectiveSequence.push(GremlinManager.GameButtons[2]);
+    }
+
+    static checkIfGood() {
+        let size = GremlinManager.PlayerSequence.length - 1;
+        console.log(size);
+        console.log(
+            GremlinManager.PlayerSequence[size].color 
+            === GremlinManager.ObjectiveSequence[size].color
+        );
+        //if Player
+        
+    }
+
+
     draw(ctx) {
+        //TODO: #1 Make separate canvases for score, lives, etc.
+        ctx.fillText(this.score, 20, 20);
 
     }
 
     update() {
-        
+
     }
 
 
