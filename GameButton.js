@@ -33,7 +33,7 @@ class GButton {
                 this.activeColor = this.color;
                 this.activated = false;
             }
-        } else if (this.game.click /*&& this.game.mouse*/) {
+        } else if (this.game.click && GremlinManager.lightingButtons === false) {
             this.checkClicked(this.game.click.x, this.game.click.y);
         }
     }
@@ -42,6 +42,12 @@ class GButton {
         this.activated = true;
         this.activeColor = "White";
         this.timeForFlash = 0.1;
+    }
+
+    longFlash() {
+        this.activated = true;
+        this.activeColor = "White";
+        this.timeForFlash = 0.35;
     }
 
     /*
@@ -71,13 +77,13 @@ class GremlinManager {
     static ObjectiveSequence = [];
     static PlayerSequence = [];
     static lightingButtons = false;
+    static playerScore = 0;
 
     constructor(game) {
         this.game = game;
         
 
         this.gameIsOver = false;
-        this.score = 0;
         this.checkIndex = 0;
 
     }
@@ -99,15 +105,34 @@ class GremlinManager {
         GremlinManager.ObjectiveSequence.push(GremlinManager.GameButtons[0]);
         GremlinManager.ObjectiveSequence.push(GremlinManager.GameButtons[1]);
         GremlinManager.ObjectiveSequence.push(GremlinManager.GameButtons[2]);
+        this.lightButtons();
+    }
+
+    lightButtons() {
+        GremlinManager.lightingButtons = true;
+        var cur = 0;
+        var size = GremlinManager.ObjectiveSequence.length;
+        setTimeout(() => {this.freeButtons()}, 500 * size);
+
+        GremlinManager.ObjectiveSequence.forEach(button => {
+            setTimeout(() => {button.longFlash()}, 500 * cur);
+            cur++;
+        });
+    }
+
+    freeButtons() {
+        GremlinManager.lightingButtons = false;
     }
 
     static checkIfGood() {
         let size = GremlinManager.PlayerSequence.length - 1;
-        console.log(size);
-        console.log(
-            GremlinManager.PlayerSequence[size].color 
-            === GremlinManager.ObjectiveSequence[size].color
-        );
+        let good = GremlinManager.PlayerSequence[size].color === GremlinManager.ObjectiveSequence[size].color;
+        console.log(good);
+        if(good) {
+            GremlinManager.playerScore++;
+        } else {
+            //TODO: Lose lives/game logic.
+        }
         //if Player
         
     }
@@ -115,7 +140,7 @@ class GremlinManager {
 
     draw(ctx) {
         //TODO: #1 Make separate canvases for score, lives, etc.
-        ctx.fillText(this.score, 20, 20);
+        ctx.fillText(GremlinManager.playerScore, 20, 20);
 
     }
 
