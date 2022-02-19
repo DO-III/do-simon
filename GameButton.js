@@ -97,22 +97,34 @@ class GremlinManager {
             this.game.addEntity(button);
         });
 
-        this.startGame();
+        GremlinManager.startGame();
     }
 
-    startGame() {
+    static startGame() {
         //Test value, make generation later.
+        GremlinManager.incrementSequence();
+    }
+
+    static incrementSequence() {
+        GremlinManager.ObjectiveSequence.push(this.getRandomButton());
+        console.log(GremlinManager.ObjectiveSequence[0]);
+        GremlinManager.lightButtons();
+        GremlinManager.getRandomButton();
+    }
+
+    testSequence() {
         GremlinManager.ObjectiveSequence.push(GremlinManager.GameButtons[0]);
         GremlinManager.ObjectiveSequence.push(GremlinManager.GameButtons[1]);
         GremlinManager.ObjectiveSequence.push(GremlinManager.GameButtons[2]);
-        this.lightButtons();
     }
 
-    lightButtons() {
+
+
+    static lightButtons() {
         GremlinManager.lightingButtons = true;
-        var cur = 0;
+        var cur = 1;
         var size = GremlinManager.ObjectiveSequence.length;
-        setTimeout(() => {this.freeButtons()}, 500 * size);
+        setTimeout(() => {GremlinManager.freeButtons()}, 500 * (size + 1));
 
         GremlinManager.ObjectiveSequence.forEach(button => {
             setTimeout(() => {button.longFlash()}, 500 * cur);
@@ -120,22 +132,41 @@ class GremlinManager {
         });
     }
 
-    freeButtons() {
+    static freeButtons() {
         GremlinManager.lightingButtons = false;
     }
 
     static checkIfGood() {
         let size = GremlinManager.PlayerSequence.length - 1;
+        console.log(size);
         let good = GremlinManager.PlayerSequence[size].color === GremlinManager.ObjectiveSequence[size].color;
         console.log(good);
         if(good) {
             GremlinManager.playerScore++;
+            if(size + 1 === GremlinManager.ObjectiveSequence.length) {
+                GremlinManager.PlayerSequence = [];
+                GremlinManager.incrementSequence();
+                GremlinManager.lightButtons();
+            }
         } else {
+            //Discrepancy! Flash the right one and repeat the pattern.
+            GremlinManager.PlayerSequence = [];
+            this.lightingButtons = true;
+            for(var i = 0; i < 3; i++) {
+                setTimeout(() => {GremlinManager.ObjectiveSequence[size].flash();}, 250 * i);
+            }
+            GremlinManager.lightButtons();
+            
             //TODO: Lose lives/game logic.
         }
         //if Player
         
     }
+
+    static getRandomButton() {
+        return GremlinManager.GameButtons[Math.floor(Math.random() * 9)]; //The maximum is exclusive and the minimum is inclusive
+    }
+      
 
 
     draw(ctx) {
