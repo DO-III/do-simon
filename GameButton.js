@@ -38,6 +38,11 @@ class GButton {
         }
     }
 
+    gameOver() {
+        this.color = "gray";
+        this.activeColor = "gray";
+    }
+
     flash() {
         this.activated = true;
         this.activeColor = "White";
@@ -78,6 +83,7 @@ class GremlinManager {
     static PlayerSequence = [];
     static lightingButtons = false;
     static playerScore = 0;
+    static strikes = 0;
 
     constructor(game) {
         this.game = game;
@@ -102,6 +108,7 @@ class GremlinManager {
 
     static startGame() {
         //Test value, make generation later.
+        GremlinManager.strikes = 3;
         GremlinManager.incrementSequence();
     }
 
@@ -138,9 +145,7 @@ class GremlinManager {
 
     static checkIfGood() {
         let size = GremlinManager.PlayerSequence.length - 1;
-        console.log(size);
         let good = GremlinManager.PlayerSequence[size].color === GremlinManager.ObjectiveSequence[size].color;
-        console.log(good);
         if(good) {
             GremlinManager.playerScore++;
             if(size + 1 === GremlinManager.ObjectiveSequence.length) {
@@ -151,11 +156,20 @@ class GremlinManager {
         } else {
             //Discrepancy! Flash the right one and repeat the pattern.
             GremlinManager.PlayerSequence = [];
+            GremlinManager.strikes--;
             this.lightingButtons = true;
-            for(var i = 0; i < 3; i++) {
-                setTimeout(() => {GremlinManager.ObjectiveSequence[size].flash();}, 250 * i);
+            //Unless the player has ran out of lives. If they did, the game is over!
+            if (GremlinManager.strikes === 0) {
+                for (var i = 0; i < GremlinManager.GameButtons.length; i++) { //
+                    GremlinManager.GameButtons[i].gameOver();
+                }
+            } else {
+                for(var i = 0; i < 3; i++) {
+                    setTimeout(() => {GremlinManager.ObjectiveSequence[size].flash();}, 250 * i);
+                }
+                GremlinManager.lightButtons();
             }
-            GremlinManager.lightButtons();
+            
             
             //TODO: Lose lives/game logic.
         }
@@ -171,7 +185,11 @@ class GremlinManager {
 
     draw(ctx) {
         //TODO: #1 Make separate canvases for score, lives, etc.
-        ctx.fillText(GremlinManager.playerScore, 20, 20);
+        ctx.fillText("Score: " + GremlinManager.playerScore, 20, 20);
+        ctx.fillText("Strikes: " + GremlinManager.strikes, 20, 40);
+        if(GremlinManager.strikes === 0) {
+            ctx.fillText("Game Over!", 20, 60);
+        }
 
     }
 
