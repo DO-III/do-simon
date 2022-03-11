@@ -6,6 +6,7 @@ ASSET_MANAGER.queueDownload("./gfx/strikes0.png");
 ASSET_MANAGER.queueDownload("./gfx/strikes1.png");
 ASSET_MANAGER.queueDownload("./gfx/strikes2.png");
 ASSET_MANAGER.queueDownload("./gfx/strikes3.png");
+ASSET_MANAGER.queueDownload("./gfx/ui.png");
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");

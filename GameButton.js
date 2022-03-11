@@ -1,4 +1,5 @@
 const BUTTON_DIMENSION = 150;
+const TEXT_LASTING_PERIOD = 1;
 
 
 
@@ -87,14 +88,63 @@ class GremlinManager {
     static lightingButtons = false;
     static playerScore = 0;
     static strikes = 0;
+    
+    static playerDidSequence = false;
+
+    static textSelected = "nothing";
+
+    static goodText = [
+        "GOOD STUFF",
+        "YEET",
+        "NICE WORK",
+        "EPIC GAMER",
+        "NOT BAD",
+        "COOL",
+        "WICKED",
+        "POGCHAMP",
+        "5HEAD",
+        "BIG BRAIN",
+        "EUPHORIA",
+        "ASCENDED"
+    ];
+
+    static badText = [
+        "NOPE",
+        "TRY AGAIN",
+        "NOT IT",
+        "L",
+        "RATIO",
+        "SKILL ISSUE",
+        "OOF",
+        ":KAPPA:",
+        "WRONG",
+        "WASTED",
+        "UM, NO",
+        "SORRY",
+        "PRESS F"
+    ];
+
+    static endText = "GAME OVER";
 
     constructor(game) {
         this.game = game;
+        //Setup for score and response text
+        this.sc = document.createElement('canvas');
+        this.sc.width = 225;
+        this.sc.height = 100;
+        this.scoreCtx = this.sc.getContext('2d');
+        this.scoreCtx.textAlign = 'center';
+        this.scoreCtx.font = 'small-caps 700 30px courier';
+        this.scoreCtx.strokeStyle = 'red';
+        this.scoreCtx.fillStyle = 'red';
+        
         
 
         this.gameIsOver = false;
         this.checkIndex = 0;
+        this.timeOut = 0;
         this.strikeAsset = ASSET_MANAGER.getAsset("./gfx/strikes0.png");
+        this.bgUiAsset = ASSET_MANAGER.getAsset("./gfx/ui.png");
 
     }
 
@@ -153,12 +203,19 @@ class GremlinManager {
         if(good) {
             GremlinManager.playerScore++;
             if(size + 1 === GremlinManager.ObjectiveSequence.length) {
+                GremlinManager.playerDidSequence = true;
+                GremlinManager.setText(GremlinManager.playerDidSequence);
                 GremlinManager.PlayerSequence = [];
                 GremlinManager.incrementSequence();
                 GremlinManager.lightButtons();
+                if (GremlinManager.strikes < 3) {
+                    GremlinManager.strikes++;
+                }
             }
         } else {
             //Discrepancy! Flash the right one and repeat the pattern.
+            GremlinManager.setText(GremlinManager.playerDidSequence);
+            GremlinManager.playerDidSequence = true;
             GremlinManager.PlayerSequence = [];
             GremlinManager.strikes--;
             this.lightingButtons = true;
@@ -168,9 +225,11 @@ class GremlinManager {
                     GremlinManager.GameButtons[i].gameOver();
                 }
             } else {
+                
                 for(var i = 0; i < 3; i++) {
                     setTimeout(() => {GremlinManager.ObjectiveSequence[size].flash();}, 250 * i);
                 }
+                
                 GremlinManager.lightButtons();
             }
         }
@@ -178,26 +237,73 @@ class GremlinManager {
         
     }
 
+
     static getRandomButton() {
         return GremlinManager.GameButtons[Math.floor(Math.random() * 9)]; //The maximum is exclusive and the minimum is inclusive
+    }
+
+    static setText(wasCorrect) {
+        console.log(wasCorrect)
+
+        if (wasCorrect === true) {
+            GremlinManager.textSelected = GremlinManager.goodText[
+                GremlinManager.getRandomInt(GremlinManager.goodText.length)];
+        } else {
+            GremlinManager.textSelected = GremlinManager.badText[
+                GremlinManager.getRandomInt(GremlinManager.badText.length)];
+            console.log("s")
+        }
     }
       
 
 
     draw(ctx) {
-        //TODO: #1 Make separate canvases for score, lives, etc.
-        ctx.fillText("Score: " + GremlinManager.playerScore, 20, 20);
-        ctx.drawImage(this.strikeAsset, 0, 0)
+        
+        ctx.strokeStyle = "red";
+        //Draw image assets first.
+        ctx.drawImage(this.strikeAsset, 0, 0);
+        ctx.drawImage(this.bgUiAsset, 225, 0);
 
-        if(GremlinManager.strikes === 0) {
-            ctx.fillText("Game Over!", 20, 60);
+        //Then we draw any necessary text.
+        //Clear it first to avoid an obnoxious bug.
+        this.scoreCtx.clearRect(0, 0, 225, 100);
+        this.scoreCtx.fillText("Score: " + GremlinManager.playerScore, 110, 35);
+        if(GremlinManager.playerDidSequence && !(GremlinManager.strikes === 0)) {
+            this.scoreCtx.fillText(GremlinManager.textSelected, 110, 85); 
+        } else if (GremlinManager.strikes === 0) {
+            this.scoreCtx.fillText("GAME OVER", 110, 85); 
         }
 
+
+        
+        
+
+        ctx.drawImage(this.sc, 225, 0);
+        
+
+        
+
+    }
+
+    static getRandomInt(max) {
+        return Math.floor(Math.random() * max);
     }
 
     update() {
         this.strikeAsset = ASSET_MANAGER.getAsset("./gfx/strikes" + GremlinManager.strikes + ".png");
 
+        if (GremlinManager.playerDidSequence) {
+            this.timeOut += this.game.clockTick;
+            console.log(this.timeOut);
+            if (this.timeOut >= TEXT_LASTING_PERIOD) {
+                GremlinManager.playerDidSequence = false;
+                this.timeOut = 0;
+            }
+        }
+
+        if(GremlinManager.strikes === 0) {
+            GremlinManager.textSelected = "GAME OVER";
+        }
     }
 
 
