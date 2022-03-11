@@ -8,6 +8,21 @@ ASSET_MANAGER.queueDownload("./gfx/strikes2.png");
 ASSET_MANAGER.queueDownload("./gfx/strikes3.png");
 ASSET_MANAGER.queueDownload("./gfx/ui.png");
 
+//Sounds
+/*
+ASSET_MANAGER.queueDownload("./sfx/button0.mp3");
+ASSET_MANAGER.queueDownload("./sfx/button1.mp3");
+ASSET_MANAGER.queueDownload("./sfx/button2.mp3");
+ASSET_MANAGER.queueDownload("./sfx/button3.mp3");
+ASSET_MANAGER.queueDownload("./sfx/button4.mp3");
+ASSET_MANAGER.queueDownload("./sfx/button5.mp3");
+ASSET_MANAGER.queueDownload("./sfx/button6.mp3");
+ASSET_MANAGER.queueDownload("./sfx/button7.mp3");
+ASSET_MANAGER.queueDownload("./sfx/button8.mp3");
+ASSET_MANAGER.queueDownload("./sfx/wrong.mp3");
+ASSET_MANAGER.queueDownload("./sfx/gameOver.mp3");
+*/
+
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
 	const ctx = canvas.getContext("2d");

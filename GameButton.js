@@ -10,6 +10,12 @@ Buttons flash when clicked or prompted.
  */
 class GButton {
 
+    static curBut = 0;
+
+
+
+
+
     constructor(game, x, y, color) {
         this.graphic = ASSET_MANAGER.getAsset("./gfx/button.png");
         this.game = game;
@@ -17,6 +23,8 @@ class GButton {
         this.y = y;
         this.color = color;
         this.activeColor = color;
+        this.clickSFX = new Audio('sfx/button' + GButton.curBut + '.mp3');
+        GButton.curBut++;
 
         this.activated = false;
         this.timeForFlash = 0;
@@ -57,6 +65,11 @@ class GButton {
         this.activated = true;
         this.activeColor = "White";
         this.timeForFlash = 0.35;
+        if (this.clickSFX.paused) {
+            this.clickSFX.play();
+        }else{
+            this.clickSFX.currentTime = 0
+        }
     }
 
     /*
@@ -67,6 +80,11 @@ class GButton {
             if (Y < this.y + 150 && this.y < Y) {
                 if (this.activated == false) {
                     this.flash();
+                    if (this.clickSFX.paused) {
+                        this.clickSFX.play();
+                    }else{
+                        this.clickSFX.currentTime = 0
+                    }
                     GremlinManager.PlayerSequence.push(this);
                     GremlinManager.checkIfGood();
                 }
@@ -137,6 +155,9 @@ class GremlinManager {
         this.scoreCtx.font = 'small-caps 700 30px courier';
         this.scoreCtx.strokeStyle = 'red';
         this.scoreCtx.fillStyle = 'red';
+
+        GremlinManager.gameOverSFX = new Audio ('sfx/gameOver.mp3');
+        GremlinManager.wrongSFX = new Audio ('sfx/wrong.mp3');
         
         
 
@@ -223,11 +244,23 @@ class GremlinManager {
             if (GremlinManager.strikes === 0) {
                 for (var i = 0; i < GremlinManager.GameButtons.length; i++) { //
                     GremlinManager.GameButtons[i].gameOver();
+                    this.gameOverSFX.play();
                 }
             } else {
                 
                 for(var i = 0; i < 3; i++) {
                     setTimeout(() => {GremlinManager.ObjectiveSequence[size].flash();}, 250 * i);
+                    setTimeout(() => {
+                        
+                        if (GremlinManager.wrongSFX.paused) {
+                            GremlinManager.wrongSFX.play();
+                        }else{
+                            GremlinManager.wrongSFX.currentTime = 0
+                        }
+
+
+
+                    }, 250 * i);
                 }
                 
                 GremlinManager.lightButtons();
