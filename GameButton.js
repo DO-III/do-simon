@@ -189,7 +189,6 @@ class GremlinManager {
 
     static incrementSequence() {
         GremlinManager.ObjectiveSequence.push(this.getRandomButton());
-        console.log(GremlinManager.ObjectiveSequence[0]);
         GremlinManager.lightButtons();
         GremlinManager.getRandomButton();
     }
@@ -276,7 +275,6 @@ class GremlinManager {
     }
 
     static setText(wasCorrect) {
-        console.log(wasCorrect)
 
         if (wasCorrect === true) {
             GremlinManager.textSelected = GremlinManager.goodText[
@@ -284,7 +282,6 @@ class GremlinManager {
         } else {
             GremlinManager.textSelected = GremlinManager.badText[
                 GremlinManager.getRandomInt(GremlinManager.badText.length)];
-            console.log("s")
         }
     }
       
@@ -327,7 +324,6 @@ class GremlinManager {
 
         if (GremlinManager.playerDidSequence) {
             this.timeOut += this.game.clockTick;
-            console.log(this.timeOut);
             if (this.timeOut >= TEXT_LASTING_PERIOD) {
                 GremlinManager.playerDidSequence = false;
                 this.timeOut = 0;
