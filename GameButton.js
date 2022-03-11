@@ -1,6 +1,7 @@
 const BUTTON_DIMENSION = 150;
 
 
+
 /*
 Creates a single button in Gremlin Says.
 
@@ -9,6 +10,7 @@ Buttons flash when clicked or prompted.
 class GButton {
 
     constructor(game, x, y, color) {
+        this.graphic = ASSET_MANAGER.getAsset("./gfx/button.png");
         this.game = game;
         this.x = x;
         this.y = y;
@@ -22,6 +24,7 @@ class GButton {
     draw(ctx) {
         ctx.fillStyle = this.activeColor;
         ctx.fillRect(this.x, this.y, BUTTON_DIMENSION, BUTTON_DIMENSION);
+        ctx.drawImage(this.graphic, this.x, this.y);
 
         
     }
@@ -91,6 +94,7 @@ class GremlinManager {
 
         this.gameIsOver = false;
         this.checkIndex = 0;
+        this.strikeAsset = ASSET_MANAGER.getAsset("./gfx/strikes0.png");
 
     }
 
@@ -169,9 +173,6 @@ class GremlinManager {
                 }
                 GremlinManager.lightButtons();
             }
-            
-            
-            //TODO: Lose lives/game logic.
         }
         //if Player
         
@@ -186,7 +187,8 @@ class GremlinManager {
     draw(ctx) {
         //TODO: #1 Make separate canvases for score, lives, etc.
         ctx.fillText("Score: " + GremlinManager.playerScore, 20, 20);
-        ctx.fillText("Strikes: " + GremlinManager.strikes, 20, 40);
+        ctx.drawImage(this.strikeAsset, 0, 0)
+
         if(GremlinManager.strikes === 0) {
             ctx.fillText("Game Over!", 20, 60);
         }
@@ -194,6 +196,7 @@ class GremlinManager {
     }
 
     update() {
+        this.strikeAsset = ASSET_MANAGER.getAsset("./gfx/strikes" + GremlinManager.strikes + ".png");
 
     }
 
